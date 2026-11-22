@@ -36,6 +36,6 @@ def get_job(job_id: str, path: str | Path = "relay.db") -> dict[str, Any] | None
         "SELECT id, status, payload FROM jobs WHERE id = ?", (job_id,)
     ).fetchone()
     con.close()
-    if row == None:
+    if row is None:
         return None
     return {"id": row[0], "status": row[1], "payload": json.loads(row[2])}
