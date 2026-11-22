@@ -22,6 +22,7 @@ def test_create_and_get_job(client) -> None:
     job = response.json()
     assert job["status"] == "queued"
     assert job["payload"] == payload
+    assert response.headers["Location"] == f"/v1/jobs/{job['id']}"
 
     response = client.get(f"/v1/jobs/{job['id']}")
     assert response.status_code == 200
@@ -35,4 +36,9 @@ def test_get_unknown_job_returns_404(client) -> None:
 
 def test_create_job_without_payload_returns_422(client) -> None:
     response = client.post("/v1/jobs", json={})
+    assert response.status_code == 422
+
+
+def test_create_job_with_wrong_payload_type_returns_422(client) -> None:
+    response = client.post("/v1/jobs", json={"payload": "wrong format"})
     assert response.status_code == 422
