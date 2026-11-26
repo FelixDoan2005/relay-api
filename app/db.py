@@ -39,3 +39,15 @@ def get_job(job_id: str, path: str | Path = "relay.db") -> dict[str, Any] | None
     if row is None:
         return None
     return {"id": row[0], "status": row[1], "payload": json.loads(row[2])}
+
+def list_jobs(limit: int = 20, offset: int = 0, path: str | Path = "relay.db") -> list[dict[str, Any]]:
+    con = get_connection(path)
+    rows = con.execute(
+        "SELECT id, status, payload FROM jobs ORDER BY rowid LIMIT ? OFFSET ?",
+        (limit, offset),
+    ).fetchall()
+    con.close()
+    return [
+        {"id": row[0], "status": row[1], "payload": json.loads(row[2])}
+        for row in rows
+    ]
